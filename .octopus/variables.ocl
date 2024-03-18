@@ -1,0 +1,21 @@
+variable "Project.AWS.Account" {
+    type = "AmazonWebServicesAccount"
+
+    value "demo-octopus-app" {}
+}
+
+variable "Project.AWS.RegionCode" {
+    value "us-east-2" {}
+}
+
+variable "Project.AWS.StackName" {
+    value "awd-#{Octopus.Project.Name | ToLower | Replace \" \" \"-\" }-stack" {}
+}
+
+variable "Project.CloudFormation.AppBucketName" {
+    value "awd-#{Octopus.Project.Name | ToLower | Replace \" \" \"-\" }-bucket" {}
+}
+
+variable "Project.K8s.Namespace" {
+    value "awd-#{Octopus.Project.Name | ToLower | Replace \" \" \"-\" }" {}
+}
