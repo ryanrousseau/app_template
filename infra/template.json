@@ -1,0 +1,15 @@
+{
+  "Parameters" : {
+    "AppBucketName" : {
+      "Type" : "String"
+    }
+  },
+  "Resources": {
+      "AppBucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": { "Ref": "AppBucketName" }
+          }
+      }
+  }
+}

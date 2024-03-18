@@ -1,0 +1,6 @@
+[
+    {
+      "ParameterKey": "AppBucketName",
+      "ParameterValue": "#{Project.CloudFormation.AppBucketName}"
+    }
+  ]
