@@ -12,7 +12,7 @@ step "deploy-an-aws-cloudformation-template" {
             Octopus.Action.Aws.TemplateSource = "Package"
             Octopus.Action.Aws.WaitForCompletion = "True"
             Octopus.Action.AwsAccount.UseInstanceRole = "False"
-            Octopus.Action.AwsAccount.Variable = "Project.AWS.Account"
+            Octopus.Action.AwsAccount.Variable = "Project.Tenant.AWS.Account"
             Octopus.Action.Package.DownloadOnTentacle = "False"
             Octopus.Action.Package.FeedId = "octopus-server-built-in"
             Octopus.Action.Package.JsonConfigurationVariablesTargets = "template.json, params.json"
