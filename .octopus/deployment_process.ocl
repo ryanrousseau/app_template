@@ -1,0 +1,72 @@
+step "deploy-an-aws-cloudformation-template" {
+    name = "Deploy an AWS CloudFormation template"
+
+    action {
+        action_type = "Octopus.AwsRunCloudFormation"
+        properties = {
+            Octopus.Action.Aws.AssumeRole = "False"
+            Octopus.Action.Aws.CloudFormationStackName = "#{Project.AWS.StackName}"
+            Octopus.Action.Aws.CloudFormationTemplate = "template.json"
+            Octopus.Action.Aws.CloudFormationTemplateParametersRaw = "params.json"
+            Octopus.Action.Aws.Region = "#{Project.AWS.RegionCode}"
+            Octopus.Action.Aws.TemplateSource = "Package"
+            Octopus.Action.Aws.WaitForCompletion = "True"
+            Octopus.Action.AwsAccount.UseInstanceRole = "False"
+            Octopus.Action.AwsAccount.Variable = "Project.Tenant.AWS.Account"
+            Octopus.Action.Package.DownloadOnTentacle = "False"
+            Octopus.Action.Package.FeedId = "octopus-server-built-in"
+            Octopus.Action.Package.JsonConfigurationVariablesTargets = "template.json, params.json"
+            Octopus.Action.Package.PackageId = "EKS_Template.Infrastructure"
+            OctopusUseBundledTooling = "False"
+        }
+        worker_pool = "hosted-ubuntu"
+
+        container {
+            feed = "docker-hub"
+            image = "octopusdeploy/worker-tools:6.1.1-ubuntu.22.04"
+        }
+
+        packages {
+            acquisition_location = "Server"
+            feed = "octopus-server-built-in"
+            package_id = "EKS_Template.Infrastructure"
+            properties = {
+                SelectionMode = "immediate"
+            }
+        }
+    }
+}
+
+step "deploy-kubernetes-yaml" {
+    name = "Deploy Kubernetes YAML"
+    properties = {
+        Octopus.Action.TargetRoles = "app-template"
+    }
+
+    action {
+        action_type = "Octopus.KubernetesDeployRawYaml"
+        properties = {
+            Octopus.Action.GitRepository.Source = "External"
+            Octopus.Action.Kubernetes.DeploymentTimeout = "180"
+            Octopus.Action.Kubernetes.ResourceStatusCheck = "True"
+            Octopus.Action.KubernetesContainers.CustomResourceYamlFileName = "k8s/*.yaml"
+            Octopus.Action.KubernetesContainers.Namespace = "#{Project.K8s.Namespace}"
+            Octopus.Action.Script.ScriptSource = "GitRepository"
+            OctopusUseBundledTooling = "False"
+        }
+        worker_pool = "hosted-ubuntu"
+
+        container {
+            feed = "docker-hub"
+            image = "octopuslabs/k8s-workertools:latest"
+        }
+
+        git_dependencies {
+            default_branch = "main"
+            file_path_filters = ["k8s/*.yaml"]
+            git_credential_id = "GitCredentials-122"
+            git_credential_type = "Library"
+            repository_uri = "https://github.com/ryanrousseau/app_template.git"
+        }
+    }
+}

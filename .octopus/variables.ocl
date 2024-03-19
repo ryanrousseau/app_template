@@ -1,0 +1,15 @@
+variable "Project.K8s.Namespace" {
+    value "awd-#{Octopus.Project.Name | ToLower | Replace \" \" \"-\" }" {}
+}
+
+variable "Project.AWS.RegionCode" {
+    value "#{Project.Tenant.AWS.RegionCode}" {}
+}
+
+variable "Project.AWS.StackName" {
+    value "#{Project.Tenant.CloudFormation.StackName}" {}
+}
+
+variable "Project.CloudFormation.AppBucketName" {
+    value "#{Project.Tenant.CloudFormation.AppBucketName}" {}
+}
